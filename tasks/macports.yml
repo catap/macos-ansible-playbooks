@@ -18,7 +18,7 @@
     {{ macports_prefix }}/bin/port version | grep 'Version: {{ version }}'
     otool -L {{ macports_prefix }}/libexec/macports/lib/pextlib1.0/Pextlib.dylib | grep {{ bootstrap_prefix }}/lib/libcurl
   ignore_errors: yes
-  register: install_macports
+  register: install_macports_with_curl
   when: bootstrap_curl is defined
 
 - name: Create temporary directory
@@ -27,20 +27,20 @@
     prefix: macports
     suffix: bootstrap
   register: tmp_dir
-  when: install_macports is not succeeded
+  when: (install_macports is not succeeded) or (install_macports_with_curl is not succeeded)
 
 - name: Download MacPorts sources
   get_url:
     url: 'http://distfiles.macports.org/MacPorts/MacPorts-{{ version }}.tar.bz2'
     dest: '{{ tmp_dir.path }}/MacPorts-{{ version }}.tar.bz2'
     checksum: 'sha1:{{ checksum }}'
-  when: install_macports is not succeeded
+  when: (install_macports is not succeeded) or (install_macports_with_curl is not succeeded)
 
 - name: Extract MacPorts sources
   shell:
     cmd: 'tar xjf {{ tmp_dir.path }}/MacPorts-{{ version }}.tar.bz2'
     chdir: '{{ tmp_dir.path }}'
-  when: install_macports is not succeeded
+  when: (install_macports is not succeeded) or (install_macports_with_curl is not succeeded)
 
 - name: Switch bootstrap MacPorts to libstdc++
   become: yes
@@ -48,7 +48,7 @@
     path: '{{ bootstrap_prefix }}/etc/macports/macports.conf'
     line: 'cxx_stdlib              libstdc++'
     insertbefore: BOF
-  when: (install_macports is not succeeded) and (ansible_facts.osversion | regex_search('^\d+') | int < 11) and (bootstrap_curl is defined)
+  when: (install_macports_with_curl is not succeeded) and (ansible_facts.osversion | regex_search('^\d+') | int < 11) and (bootstrap_curl is defined)
 
 - name: Sync bootstrap MacPorts
   become: yes
@@ -56,7 +56,7 @@
     cmd: '{{ bootstrap_prefix }}/bin/port sync'
   environment:
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
-  when: (install_macports is not succeeded) and (bootstrap_curl is defined)
+  when: install_macports_with_curl is not succeeded
 
 - name: Install bootstrap's curl
   become: yes
@@ -64,7 +64,7 @@
     cmd: '{{ bootstrap_prefix }}/bin/port -N install curl {{ bootstrap_curl_variants }}'
   environment:
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
-  when: (install_macports is not succeeded) and (bootstrap_curl is defined)
+  when: install_macports_with_curl is not succeeded
 
 - name: Cleanup not requried bootstrap's not requried ports
   become: yes
@@ -72,7 +72,7 @@
     cmd: '{{ bootstrap_prefix }}/bin/port -N reclaim'
   environment:
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
-  when: (install_macports is not succeeded) and (bootstrap_curl is defined)
+  when: install_macports_with_curl is not succeeded
 
 - name: Configure MacPorts against bootstrap curl
   shell:
@@ -80,7 +80,7 @@
     chdir: '{{ tmp_dir.path }}/MacPorts-{{ version }}'
   environment:
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
-  when: (install_macports is not succeeded) and (bootstrap_curl is defined)
+  when: install_macports_with_curl is not succeeded
 
 - name: Configure MacPorts
   shell:
@@ -88,7 +88,7 @@
     chdir: '{{ tmp_dir.path }}/MacPorts-{{ version }}'
   environment:
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
-  when: (install_macports is not succeeded) and (bootstrap_curl is defined)
+  when: install_macports is not succeeded
 
 - name: Make MacPorts
   shell:
@@ -96,7 +96,7 @@
     chdir: '{{ tmp_dir.path }}/MacPorts-{{ version }}'
   environment:
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
-  when: install_macports is not succeeded
+  when: (install_macports is not succeeded) or (install_macports_with_curl is not succeeded)
 
 - name: Install MacPorts
   become: yes
@@ -105,7 +105,7 @@
     chdir: '{{ tmp_dir.path }}/MacPorts-{{ version }}'
   environment:
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
-  when: install_macports is not succeeded
+  when: (install_macports is not succeeded) or (install_macports_with_curl is not succeeded)
 
 - name: Disable reclaim reminders
   become: yes
