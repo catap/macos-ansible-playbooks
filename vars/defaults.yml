@@ -16,13 +16,9 @@ macports_ports_path: file:///Volumes/SharedFolders/Home/src/macports-ports
 # Path to bootstrap MacPorts
 bootstrap_prefix: /opt/bootstrap
 
-# Define a bootstrap python which is used by ansible
-# keep in mind that it should be a bootstrap port, not usual
-# otherwise it may install a lot of compilers from scratch.
-bootstrap_python: python27-bootstrap
-
-# Bootstrap curl variants, default should be enough
-bootstrap_curl_variants:
+# Bootstrap curl variants, http2 requires C++14 compiler
+# that isn't available on old system.
+bootstrap_curl_variants: -http2
 
 # The path to temporary files
 tmp_prefix: /tmp
