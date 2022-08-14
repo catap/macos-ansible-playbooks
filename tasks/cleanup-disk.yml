@@ -96,11 +96,6 @@
     rm -rf {{ bootstrap_prefix }}/var/log/*
     rm -rf {{ bootstrap_prefix }}/var/cache/*
 
-- name: Remove all installed ports
-  become: yes
-  shell: '{{ macports_prefix }}/bin/port -N uninstall installed'
-  ignore_errors: yes
-
 - name: Cleanup MacPorts ports tree
   become: yes
   shell: |
