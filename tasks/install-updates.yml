@@ -2,12 +2,23 @@
 # Install all available updates on macOS.
 #
 ---
-- name: Install updates via softwareupdate --install --all
+- name: Possible unstack install updates
+  become: yes
+  shell: 'defaults delete com.apple.softwareupdate'
+  ignore_errors: yes
+
+- name: The first install updates via softwareupdate --install --all
   become: yes
   shell: 'softwareupdate --install --all'
+  register: install_updates
 
 - name: Reboot machine and wait when updates are installed
   become: yes
   reboot:
     reboot_timeout: 3600
     boot_time_command: sysctl kern.boottime
+  when: (install_updates.stdout.find("restart") != -1)
+
+- name: Second install updates via softwareupdate --install --all
+  become: yes
+  shell: 'softwareupdate --install --all'
