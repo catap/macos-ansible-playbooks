@@ -2,6 +2,21 @@
 # Shrink disk size on macOS.
 #
 ---
+- name: Enable apfs defragment on /
+  become: yes
+  shell: 'diskutil apfs defragment / enable'
+  ignore_errors: yes
+
+- name: Enable apfs defragment on /Volumes/Macintosh HD
+  become: yes
+  shell: 'diskutil apfs defragment /Volumes/Macintosh\ HD enable'
+  ignore_errors: yes
+
+- name: Enable apfs defragment on /System/Volumes/Data
+  become: yes
+  shell: 'diskutil apfs defragment /System/Volumes/Data enable'
+  ignore_errors: yes
+
 - name: Shrink disk via secureErase freespace on /
   become: yes
   shell: 'diskutil secureErase freespace 0 /'
