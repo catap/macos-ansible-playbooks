@@ -28,6 +28,9 @@
 
     - import_tasks: tasks/setup-hostname.yml
 
+    - import_tasks: tasks/parallels-install-tools.yml
+      when: (prl_id is defined) and (skip_parallels_tools is not defined)
+
     - import_tasks: tasks/install-updates.yml
       when: skip_updates is not defined
 

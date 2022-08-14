@@ -1,0 +1,18 @@
+#
+# Install or update Parallels Tools
+#
+---
+- name: Run installation of Parallels Tools
+  local_action: command prlctl installtools {{ prl_id }}
+  ignore_errors: yes
+
+- name: Sleep for one minute to avoid Parallels Tools be installed and adjust time
+  pause:
+    minutes: 1
+
+- name: Wait until machine is rebooted
+  become: yes
+  reboot:
+    reboot_command: 'true'
+    reboot_timeout: 3600
+    boot_time_command: sysctl kern.boottime
