@@ -1,0 +1,10 @@
+#
+# Make list of ssh keys actual.
+#
+---
+- name: Install user keys
+  authorized_key:
+    user: '{{ ansible_facts.env.USER }}'
+    state: present
+    key: "{{ lookup('file', item) }}"
+  with_fileglob: 'keys/{{ ansible_facts.env.USER }}/id*.pub'

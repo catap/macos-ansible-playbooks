@@ -1,0 +1,75 @@
+#
+# Install or upgrade bootstrap MacPorts.
+#
+# The root cause for such ugly setup is ansible which requires at least python-2.7
+#
+# Thus, this forces to use raw calls without anything else.
+#
+---
+- name: Checking installed version of bootstrap MacPorts
+  raw: |
+    {{ bootstrap_prefix }}/bin/port version | grep 'Version: {{ version }}'
+  ignore_errors: yes
+  register: install_bootstrap
+
+- name: Download MacPorts sources
+  raw: |
+    cd {{ tmp_prefix }}
+    curl -O http://distfiles.macports.org/MacPorts/MacPorts-{{ version }}.tar.bz2
+    openssl sha1 MacPorts-{{ version }}.tar.bz2 | grep MacPorts-{{ version }}.tar.bz2 | grep {{ checksum }}
+  when: install_bootstrap is not succeeded
+
+- name: Extract MacPorts sources
+  raw: |
+    cd {{ tmp_prefix }}
+    tar xjf {{ tmp_prefix }}/MacPorts-{{ version }}.tar.bz2
+  when: install_bootstrap is not succeeded
+
+- name: Configure bootstrap MacPorts
+  raw: |
+    cd {{ tmp_prefix }}/MacPorts-{{ version }}
+    export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+    ./configure --prefix={{ bootstrap_prefix }} --with-applications-dir={{ bootstrap_prefix }}/Applications
+  when: install_bootstrap is not succeeded
+
+- name: Make bootstrap MacPorts
+  raw: |
+    cd {{ tmp_prefix }}/MacPorts-{{ version }}
+    export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+    make -j$(sysctl -n hw.ncpu)
+  when: install_bootstrap is not succeeded
+
+- name: Install bootstrap MacPorts
+  become: yes
+  raw: |
+    cd {{ tmp_prefix }}/MacPorts-{{ version }}
+    export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+    make install
+  when: install_bootstrap is not succeeded
+
+- name: Cleanup bootstrap sources
+  become: yes
+  raw: |
+    rm -rf {{ tmp_prefix }}/MacPorts-{{ version }}
+    rm -f {{ tmp_prefix }}/MacPorts-{{ version }}.tar.bz2
+  when: install_bootstrap is not succeeded
+
+- name: Disable reclaim reminders for bootstrap port tree
+  become: yes
+  raw: '{{ bootstrap_prefix }}/bin/port reclaim --disable-reminders'
+
+- name: Sync bootstrap MacPorts
+  become: yes
+  raw: '{{ bootstrap_prefix }}/bin/port sync'
+
+- name: Upgrade bootstrap's ports
+  become: yes
+  raw: '{{ bootstrap_prefix }}/bin/port upgrade outdated'
+
+- name: Install bootstrap's python
+  become: yes
+  raw: '{{ bootstrap_prefix }}/bin/port -N install {{ bootstrap_python }}'
+
+- name: Cleanup not requried ports
+  become: yes
+  raw: '{{ bootstrap_prefix }}/bin/port -N reclaim'

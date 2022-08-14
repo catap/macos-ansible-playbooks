@@ -1,0 +1,14 @@
+#
+# Shutdown a Parallels VM
+#
+---
+- name: Shutdown machine
+  become: yes
+  community.general.shutdown:
+
+- name: Wait for shutdown
+  local_action: command prlctl status {{ prl_id }}
+  register: shutdown_result
+  until: shutdown_result.stdout.find("exist stopped") != -1
+  retries: 60
+  delay: 10

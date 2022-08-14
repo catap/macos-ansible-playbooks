@@ -1,0 +1,10 @@
+#
+# Start a Parallels VM
+#
+---
+- name: Start a machine
+  local_action: command prlctl start {{ prl_id }}
+  ignore_errors: yes
+
+- name: Wait for connection
+  wait_for_connection:

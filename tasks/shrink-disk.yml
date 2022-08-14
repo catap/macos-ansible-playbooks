@@ -1,0 +1,28 @@
+#
+# Shrink disk size on macOS.
+#
+---
+- name: Shrink disk via secureErase freespace on /
+  become: yes
+  shell: 'diskutil secureErase freespace 0 /'
+  ignore_errors: yes
+  register: diskutil_root
+
+- name: Shrink disk via secureErase freespace on /Volumes/Macintosh HD
+  become: yes
+  shell: 'diskutil secureErase freespace 0 /Volumes/Macintosh\ HD'
+  ignore_errors: yes
+  register: diskutil_Macintosh_HD
+  when: diskutil_root is not succeeded
+
+- name: Shrink disk via secureErase freespace on /System/Volumes/Data
+  become: yes
+  shell: 'diskutil secureErase freespace 0 /System/Volumes/Data'
+  ignore_errors: yes
+  register: diskutil_Data
+  when: (diskutil_root is not succeeded) and (diskutil_Macintosh_HD is not succeeded)
+
+- name: Shrink disk via huge file
+  become: yes
+  shell: 'cat /dev/zero > hugefile; sync; sleep 1; sync; rm -f hugefile'
+  when: (diskutil_root is not succeeded) and (diskutil_Macintosh_HD is not succeeded) and (diskutil_Data is not succeeded)

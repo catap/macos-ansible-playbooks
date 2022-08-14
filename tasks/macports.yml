@@ -1,0 +1,121 @@
+#
+# Install or upgrade MacPorts via bootsrap MacPorts's curl.
+#
+# The root cause for such ugly setup is overstep legacy curl on old system.
+# See: https://trac.macports.org/ticket/51516
+#
+---
+- name: Checking installed version of MacPorts
+  shell: |
+    {{ macports_prefix }}/bin/port version | grep 'Version: {{ version }}'
+  ignore_errors: yes
+  register: install_macports
+
+- name: Create temporary directory
+  tempfile:
+    state: directory
+    prefix: macports
+    suffix: bootstrap
+  register: tmp_dir
+  when: install_macports is not succeeded
+
+- name: Download MacPorts sources
+  get_url:
+    url: 'http://distfiles.macports.org/MacPorts/MacPorts-{{ version }}.tar.bz2'
+    dest: '{{ tmp_dir.path }}/MacPorts-{{ version }}.tar.bz2'
+    checksum: 'sha1:{{ checksum }}'
+  when: install_macports is not succeeded
+
+- name: Extract MacPorts sources
+  shell:
+    cmd: 'tar xjf {{ tmp_dir.path }}/MacPorts-{{ version }}.tar.bz2'
+    chdir: '{{ tmp_dir.path }}'
+  when: install_macports is not succeeded
+
+- name: Switch bootstrap MacPorts to libstdc++
+  become: yes
+  lineinfile:
+    path: '{{ bootstrap_prefix }}/etc/macports/macports.conf'
+    line: 'cxx_stdlib              libstdc++'
+    insertbefore: BOF
+  when: (install_macports is not succeeded) and (ansible_facts.osversion | regex_search('^\d+') | int < 11)
+
+- name: Sync bootstrap MacPorts
+  become: yes
+  shell:
+    cmd: '{{ bootstrap_prefix }}/bin/port sync'
+  environment:
+    PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
+  when: install_macports is not succeeded
+
+- name: Install bootstrap's curl
+  become: yes
+  shell:
+    cmd: '{{ bootstrap_prefix }}/bin/port -N install curl {{ bootstrap_curl_variants }}'
+  environment:
+    PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
+  when: install_macports is not succeeded
+
+- name: Cleanup not requried bootstrap's not requried ports
+  become: yes
+  shell:
+    cmd: '{{ bootstrap_prefix }}/bin/port -N reclaim'
+  environment:
+    PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
+  when: install_macports is not succeeded
+
+- name: Configure MacPorts
+  shell:
+    cmd: './configure --prefix={{ macports_prefix }} --with-curlprefix={{ bootstrap_prefix }}'
+    chdir: '{{ tmp_dir.path }}/MacPorts-{{ version }}'
+  environment:
+    PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
+  when: install_macports is not succeeded
+
+- name: Make MacPorts
+  shell:
+    cmd: 'make -j$(sysctl -n hw.ncpu)'
+    chdir: '{{ tmp_dir.path }}/MacPorts-{{ version }}'
+  environment:
+    PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
+  when: install_macports is not succeeded
+
+- name: Install MacPorts
+  become: yes
+  shell:
+    cmd: 'make install'
+    chdir: '{{ tmp_dir.path }}/MacPorts-{{ version }}'
+  environment:
+    PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
+  when: install_macports is not succeeded
+
+- name: Disable reclaim reminders
+  become: yes
+  shell:
+    cmd: '{{ macports_prefix }}/bin/port reclaim --disable-reminders'
+  environment:
+    PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
+
+- name: Configure shell
+  become: yes
+  blockinfile:
+    path: '{{ item }}'
+    block: |
+      # MacPorts related ENVs
+      export PATH={{ macports_prefix }}/bin:/opt/local/sbin:$PATH
+      export MANPATH={{ macports_prefix }}/share/man:$MANPATH
+  ignore_errors: yes
+  with_items:
+    - /etc/profile
+    - /etc/zprofile
+
+- name: Update {{ macports_prefix }}/etc/macports/sources.conf
+  become: yes
+  template:
+    src: templates/sources.conf.j2
+    dest: '{{ macports_prefix }}/etc/macports/sources.conf'
+
+- name: Sync bootstrap MacPorts
+  become: yes
+  shell:
+    cmd: '{{ macports_prefix }}/bin/port sync'

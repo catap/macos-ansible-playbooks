@@ -1,0 +1,112 @@
+#
+# Shrink disk size on macOS.
+#
+---
+- name: Disable indexing
+  become: yes
+  shell: 'mdutil -Ea -i off'
+
+- name: Disable spotlight
+  become: yes
+  shell: 'mdutil -dEa -i off'
+  ignore_errors: yes
+
+- name: Disable TimeMachine
+  become: yes
+  shell: 'tmutil disable'
+  ignore_errors: yes
+
+- name: Disbale local snapshots of TimeMachine
+  become: yes
+  shell: 'tmutil disablelocal'
+  ignore_errors: yes
+
+- name: Delete local snapshots of TimeMachine via mount point
+  become: yes
+  shell: 'tmutil deletelocalsnapshots /'
+  ignore_errors: yes
+
+- name: Delete local snapshots of TimeMachine via date
+  become: yes
+  shell: 'tmutil listlocalsnapshotdates | while read date; do tmutil deletelocalsnapshots $date; done'
+  ignore_errors: yes
+
+- name: Switch off hibernatemode
+  become: yes
+  shell: 'pmset -a hibernatemode 0'
+  ignore_errors: yes
+
+- name: Remove sleepimage
+  become: yes
+  shell: 'rm -f /private/var/vm/sleepimage'
+  ignore_errors: yes
+
+- name: Disable swap
+  become: yes
+  shell: 'launchctl unload -w /System/Library/LaunchDaemons/com.apple.dynamic_pager.plist'
+  ignore_errors: yes
+
+- name: Remove swap files
+  become: yes
+  shell: 'rm -f /private/var/vm/swapfile*'
+  ignore_errors: yes
+
+- name: Remove core files
+  become: yes
+  shell: 'rm -rf /core/*'
+  ignore_errors: yes
+
+- name: Remove tmp files /tmp
+  become: yes
+  shell: 'rm -rf /tmp/*'
+  ignore_errors: yes
+
+- name: Remove logs /Library/Logs
+  become: yes
+  shell: 'rm -rf /Library/Logs/*'
+  ignore_errors: yes
+
+- name: Remove logs /var/logs
+  become: yes
+  shell: 'rm -rf /var/log/*'
+  ignore_errors: yes
+
+- name: Remove logs ~/Library/Logs
+  become: yes
+  shell: 'rm -rf /Users/*/Library/Logs/*'
+  ignore_errors: yes
+
+- name: Remove caches /Library/Caches
+  become: yes
+  shell: 'rm -rf /Library/Caches/*'
+  ignore_errors: yes
+
+- name: Remove caches ~/Library/Caches
+  become: yes
+  shell: 'rm -rf /Users/*/Library/Caches/*'
+  ignore_errors: yes
+
+- name: Cleanup bootstrap MacPorts ports tree
+  become: yes
+  shell: |
+    {{ bootstrap_prefix }}/bin/port -N reclaim
+    rm -rf {{ bootstrap_prefix }}/var/macports/distfiles/*
+    rm -rf {{ bootstrap_prefix }}/var/macports/sources/*
+    rm -rf {{ bootstrap_prefix }}/var/macports/logs/*
+    rm -rf {{ bootstrap_prefix }}/var/log/*
+    rm -rf {{ bootstrap_prefix }}/var/cache/*
+
+- name: Remove all installed ports
+  become: yes
+  shell: '{{ macports_prefix }}/bin/port -N uninstall installed'
+  ignore_errors: yes
+
+- name: Cleanup MacPorts ports tree
+  become: yes
+  shell: |
+    {{ macports_prefix }}/bin/port -N reclaim
+    rm -rf {{ macports_prefix }}/var/macports/distfiles/*
+    rm -rf {{ macports_prefix }}/var/macports/sources/*
+    rm -rf {{ macports_prefix }}/var/macports/logs/*
+    rm -rf {{ macports_prefix }}/var/log/*
+    rm -rf {{ macports_prefix }}/var/cache/*

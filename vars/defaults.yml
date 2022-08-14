@@ -1,0 +1,28 @@
+---
+# Snapshot name which is used to mark updated system
+snapshot_name: Clean
+
+# Basic MacPorts settings: version and SHA1 checksum
+version: 2.7.2
+checksum: 8670593ac49d779e5a8d74bdcd8452fdd61f9a5b
+
+# Path to MacPorts, better to not change it.
+macports_prefix: /opt/local
+
+# Switch ports to some shard location
+# Comment if when you don't need it
+macports_ports_path: file:///Volumes/SharedFolders/Home/src/macports-ports
+
+# Path to bootstrap MacPorts
+bootstrap_prefix: /opt/bootstrap
+
+# Define a bootstrap python which is used by ansible
+# keep in mind that it should be a bootstrap port, not usual
+# otherwise it may install a lot of compilers from scratch.
+bootstrap_python: python27-bootstrap
+
+# Bootstrap curl variants, default should be enough
+bootstrap_curl_variants:
+
+# The path to temporary files
+tmp_prefix: /tmp

@@ -1,0 +1,8 @@
+#
+# Switch machine hsotname
+#
+---
+- name: Force hostname
+  become: yes
+  shell: 'scutil --set {{ item }} {{ inventory_hostname }}'
+  with_items: HostName ComputerName LocalHostName

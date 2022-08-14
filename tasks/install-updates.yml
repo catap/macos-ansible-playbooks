@@ -1,0 +1,13 @@
+#
+# Install all available updates on macOS.
+#
+---
+- name: Install updates via softwareupdate --install --all
+  become: yes
+  shell: 'softwareupdate --install --all'
+
+- name: Reboot machine and wait when updates are installed
+  become: yes
+  reboot:
+    reboot_timeout: 3600
+    boot_time_command: sysctl kern.boottime
