@@ -9,10 +9,6 @@ checksum: 8670593ac49d779e5a8d74bdcd8452fdd61f9a5b
 # Path to MacPorts, better to not change it.
 macports_prefix: /opt/local
 
-# Switch ports to some shard location
-# Comment if when you don't need it
-macports_ports_path: file:///Volumes/SharedFolders/Home/src/macports-ports
-
 # Path to bootstrap MacPorts
 bootstrap_prefix: /opt/bootstrap
 

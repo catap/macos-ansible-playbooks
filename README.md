@@ -45,11 +45,22 @@ mavericks
 leopard
 snow-leopard
 
-[empty_macports_ports_path]
-leopard
+[macports_shared_source]
+snow-leopard
+lion
+mountain-lion
+mavericks
+yosemite
+el-capitan
+sierra
+high-sierra
+mojave
+catalina
+bigsur
+monterey
 
-[empty_macports_ports_path:vars]
-macports_ports_path=
+[macports_shared_source:vars]
+macports_source=file:///Volumes/SharedFolders/Home/src/macports-ports [default,nosync]
 
 [bootstrap_curl:vars]
 bootstrap_curl=curl
@@ -68,7 +79,8 @@ You may see that switching ports tree was disabled for 10.5; by default it
 switches ports tree to `file:///Volumes/SharedFolders/Home/src/macports-ports`
 with enabled `nosync` option.
 
-I also enable a custom python for 10.5 and using curl up to 10.10.
+I also enable a custom python for 10.5 and using curl up to 10.10, and switched
+all MacPorts to `file:///Volumes/SharedFolders/Home/src/macports-ports`.
 
 Thus, it starts VM one-by-one, but if you have enough resources to run more VMs,
 feel free to increase ansible serial. For example `ansible-playbook -e serial=2

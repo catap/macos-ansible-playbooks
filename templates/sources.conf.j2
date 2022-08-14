@@ -27,8 +27,8 @@
 # sites, etc.), the primary MacPorts source must always be tagged
 # "[default]", even if switched from the default "rsync://" URL.
 
-{% if macports_ports_path is defined and macports_ports_path != "" %}
-{{ macports_ports_path }} [default,nosync]
+{% if macports_source is defined %}
+{{ macports_source }}
 {% else %}
 rsync://rsync.macports.org/macports/release/tarballs/ports.tar [default]
 {% endif %}
