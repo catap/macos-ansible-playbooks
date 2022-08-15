@@ -1,0 +1,28 @@
+#
+# Maintenance macOS
+#
+---
+- hosts: all
+  serial: '{{ servar | default(1) }}'
+  gather_facts: no
+  vars_files:
+    - vars/defaults.yml
+  tasks:
+    - import_tasks: tasks/parallels-start.yml
+      when: prl_id is defined
+
+    - import_tasks: tasks/shrink-disk.yml
+
+    - import_tasks: tasks/parallels-shutdown.yml
+      when: prl_id is defined
+
+    - name: Make a clean snapshot
+      local_action: command prlctl snapshot {{ prl_id }} -n '{{ snapshot_name }}' -d 'MacPorts {{ version }}'
+      when: prl_id is defined
+
+    # simple confirm that it still can start :)
+    - import_tasks: tasks/parallels-start.yml
+      when: prl_id is defined
+
+    - import_tasks: tasks/parallels-shutdown.yml
+      when: prl_id is defined
