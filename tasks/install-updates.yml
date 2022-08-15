@@ -22,11 +22,3 @@
 - name: Second install updates via softwareupdate --install --all
   become: yes
   shell: 'softwareupdate --install --all'
-
-- name: Remove macOS installer if one was downloaded
-  become: yes
-  file:
-    state: absent
-    path: '{{ item }}'
-  with_items:
-    - '/Applications/Install macOS Monterey.app'

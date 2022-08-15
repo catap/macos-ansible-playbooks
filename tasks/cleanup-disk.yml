@@ -61,14 +61,24 @@
   shell: 'rm -rf /tmp/*'
   ignore_errors: yes
 
+- name: Remove tmp files /private/tmp
+  become: yes
+  shell: 'rm -rf /private/tmp/*'
+  ignore_errors: yes
+
 - name: Remove logs /Library/Logs
   become: yes
   shell: 'rm -rf /Library/Logs/*'
   ignore_errors: yes
 
-- name: Remove logs /var/logs
+- name: Remove logs /var/log
   become: yes
   shell: 'rm -rf /var/log/*'
+  ignore_errors: yes
+
+- name: Remove logs /private/var/logs
+  become: yes
+  shell: 'rm -rf /private/var/logs/*'
   ignore_errors: yes
 
 - name: Remove logs ~/Library/Logs
@@ -85,6 +95,14 @@
   become: yes
   shell: 'rm -rf /Users/*/Library/Caches/*'
   ignore_errors: yes
+
+- name: Remove macOS installer if one was downloaded
+  become: yes
+  file:
+    state: absent
+    path: '{{ item }}'
+  with_items:
+    - '/Applications/Install macOS Monterey.app'
 
 - name: Cleanup bootstrap MacPorts ports tree
   become: yes
