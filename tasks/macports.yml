@@ -133,7 +133,7 @@
     src: templates/sources.conf.j2
     dest: '{{ macports_prefix }}/etc/macports/sources.conf'
 
-- name: Sync bootstrap MacPorts
+- name: Sync MacPorts
   become: yes
   shell:
     cmd: '{{ macports_prefix }}/bin/port sync'
