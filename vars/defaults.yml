@@ -3,8 +3,8 @@
 snapshot_name: Clean
 
 # Basic MacPorts settings: version and SHA1 checksum
-version: 2.7.2
-checksum: 8670593ac49d779e5a8d74bdcd8452fdd61f9a5b
+version: 2.8.0
+checksum: d71d090b5f9e8c8e47a75aa1098d1b6fbb3bb090
 
 # Path to MacPorts, better to not change it.
 macports_prefix: /opt/local
