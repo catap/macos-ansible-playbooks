@@ -8,36 +8,37 @@
 ---
 - name: Checking installed version of bootstrap MacPorts
   raw: |
+    set -e
     {{ bootstrap_prefix }}/bin/port version | grep 'Version: {{ version }}'
   ignore_errors: yes
-  register: install_bootstrap
+  register: bootstrap_is_updated
 
 - name: Download MacPorts sources
   raw: |
     cd {{ tmp_prefix }}
     curl -O http://distfiles.macports.org/MacPorts/MacPorts-{{ version }}.tar.bz2
     openssl sha1 MacPorts-{{ version }}.tar.bz2 | grep MacPorts-{{ version }}.tar.bz2 | grep {{ checksum }}
-  when: install_bootstrap is not succeeded
+  when: bootstrap_is_updated is not succeeded
 
 - name: Extract MacPorts sources
   raw: |
     cd {{ tmp_prefix }}
     tar xjf {{ tmp_prefix }}/MacPorts-{{ version }}.tar.bz2
-  when: install_bootstrap is not succeeded
+  when: bootstrap_is_updated is not succeeded
 
 - name: Configure bootstrap MacPorts
   raw: |
     cd {{ tmp_prefix }}/MacPorts-{{ version }}
     export PATH=/bin:/sbin:/usr/bin:/usr/sbin
     ./configure --prefix={{ bootstrap_prefix }} --with-applications-dir={{ bootstrap_prefix }}/Applications
-  when: install_bootstrap is not succeeded
+  when: bootstrap_is_updated is not succeeded
 
 - name: Make bootstrap MacPorts
   raw: |
     cd {{ tmp_prefix }}/MacPorts-{{ version }}
     export PATH=/bin:/sbin:/usr/bin:/usr/sbin
     make -j$(sysctl -n hw.ncpu)
-  when: install_bootstrap is not succeeded
+  when: bootstrap_is_updated is not succeeded
 
 - name: Install bootstrap MacPorts
   become: yes
@@ -45,14 +46,14 @@
     cd {{ tmp_prefix }}/MacPorts-{{ version }}
     export PATH=/bin:/sbin:/usr/bin:/usr/sbin
     make install
-  when: install_bootstrap is not succeeded
+  when: bootstrap_is_updated is not succeeded
 
 - name: Cleanup bootstrap sources
   become: yes
   raw: |
     rm -rf {{ tmp_prefix }}/MacPorts-{{ version }}
     rm -f {{ tmp_prefix }}/MacPorts-{{ version }}.tar.bz2
-  when: install_bootstrap is not succeeded
+  when: bootstrap_is_updated is not succeeded
 
 - name: Disable reclaim reminders for bootstrap port tree
   become: yes
