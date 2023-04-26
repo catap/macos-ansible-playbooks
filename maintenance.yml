@@ -37,7 +37,7 @@
     - import_tasks: tasks/macports.yml
 
     - import_tasks: tasks/cleanup-disk.yml
-      when: (prl_id is defined) and (skip_cleanup_disk is not defined)
+      when: skip_cleanup_disk is not defined
 
     - import_tasks: tasks/parallels-shutdown.yml
       when: prl_id is defined

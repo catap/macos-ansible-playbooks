@@ -1,5 +1,5 @@
 #
-# Maintenance macOS
+# Cleanup macOS disk
 #
 ---
 - hosts: all
@@ -17,7 +17,7 @@
       when: prl_id is defined
 
     - name: Make a clean snapshot
-      local_action: command prlctl snapshot {{ prl_id }} -n '{{ snapshot_name }}' -d 'MacPorts {{ version }}'
+      local_action: command prlctl snapshot {{ prl_id }} -n 'Clean'
       when: prl_id is defined
 
     # simple confirm that it still can start :)
