@@ -102,13 +102,23 @@
     state: absent
     path: '{{ item }}'
   with_items:
+    - '/Applications/Install OS X Mavericks.app'
+    - '/Applications/Install OS X Yosemite.app'
+    - '/Applications/Install OS X El Capitan.app'
+    - '/Applications/Install macOS Sierra.app'
+    - '/Applications/Install macOS High Sierra.app'
+    - '/Applications/Install macOS Mojave.app'
+    - '/Applications/Install macOS Catalina.app'
+    - '/Applications/Install macOS Big Sur.app'
     - '/Applications/Install macOS Monterey.app'
+    - '/Applications/Install macOS Ventura.app'
 
 - name: Cleanup bootstrap MacPorts ports tree
   become: yes
   shell: |
     {{ bootstrap_prefix }}/bin/port -N reclaim
     rm -rf {{ bootstrap_prefix }}/var/macports/distfiles/*
+    rm -rf {{ bootstrap_prefix }}/var/macports/build/*
     rm -rf {{ bootstrap_prefix }}/var/macports/sources/*
     rm -rf {{ bootstrap_prefix }}/var/macports/logs/*
     rm -rf {{ bootstrap_prefix }}/var/log/*
@@ -119,6 +129,7 @@
   shell: |
     {{ macports_prefix }}/bin/port -N reclaim
     rm -rf {{ macports_prefix }}/var/macports/distfiles/*
+    rm -rf {{ macports_prefix }}/var/macports/build/*
     rm -rf {{ macports_prefix }}/var/macports/sources/*
     rm -rf {{ macports_prefix }}/var/macports/logs/*
     rm -rf {{ macports_prefix }}/var/log/*
