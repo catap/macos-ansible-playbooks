@@ -1,6 +1,6 @@
 ---
 # Snapshot name which is used to mark updated system
-snapshot_name: Clean
+snapshot_name: Maintenance
 
 # Basic MacPorts settings: version and SHA1 checksum
 version: 2.8.1
