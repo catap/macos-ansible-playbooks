@@ -39,19 +39,11 @@
     - import_tasks: tasks/cleanup-disk.yml
       when: (prl_id is defined) and (skip_cleanup_disk is not defined)
 
-    - import_tasks: tasks/shrink-disk.yml
-      when: (prl_id is defined) and (skip_shrink_disk is not defined)
-
-    # shrink requires a lot of time and Parallels Tools my produces a lot of logs
-    # clean it second time
-    - import_tasks: tasks/cleanup-disk.yml
-      when: (prl_id is defined) and (skip_cleanup_disk is not defined) and (skip_shrink_disk is not defined)
-
     - import_tasks: tasks/parallels-shutdown.yml
       when: prl_id is defined
 
     - name: Make a maintenance snapshot
-      local_action: command prlctl snapshot {{ prl_id }} -n '{{ snapshot_name }}' -d 'MacPorts {{ version }}'
+      local_action: command prlctl snapshot {{ prl_id }} -n 'Maintenance' -d 'MacPorts {{ version }}'
       when: prl_id is defined
 
     # simple confirm that it still can start :)

@@ -86,6 +86,8 @@ Thus, it starts VM one-by-one, but if you have enough resources to run more VMs,
 feel free to increase ansible serial. For example `ansible-playbook -e serial=2
 maintenance.yml` runs two VM in parallel.
 
-You may skip installing updates from Apple, updating Parallels Tools, cleanup or
-shrink the disk by define variable `skip_updates`, `skip_parallels_tools`,
-`skip_cleanup_disk` or `skip_shrink_disk`.
+You may skip installing updates from Apple, updating Parallels Tools or cleanup
+the disk by define variable `skip_updates`, `skip_parallels_tools`,
+`skip_cleanup_disk`.
+
+It also has additional playbook `shrink.yml` which fills the disk by zeros.

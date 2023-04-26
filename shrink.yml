@@ -1,5 +1,5 @@
 #
-# Maintenance macOS
+# Shrink macOS disk
 #
 ---
 - hosts: all
@@ -11,13 +11,21 @@
     - import_tasks: tasks/parallels-start.yml
       when: prl_id is defined
 
+    - import_tasks: tasks/cleanup-disk.yml
+      when: skip_cleanup_disk is not defined
+
     - import_tasks: tasks/shrink-disk.yml
+
+    # shrink requires a lot of time and Parallels Tools my produces a lot of logs
+    # clean it second time
+    - import_tasks: tasks/cleanup-disk.yml
+      when: skip_cleanup_disk is not defined
 
     - import_tasks: tasks/parallels-shutdown.yml
       when: prl_id is defined
 
     - name: Make a clean snapshot
-      local_action: command prlctl snapshot {{ prl_id }} -n '{{ snapshot_name }}' -d 'MacPorts {{ version }}'
+      local_action: command prlctl snapshot {{ prl_id }} -n 'Shrink'
       when: prl_id is defined
 
     # simple confirm that it still can start :)
