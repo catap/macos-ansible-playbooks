@@ -11,6 +11,8 @@
     - import_tasks: tasks/parallels-start.yml
       when: prl_id is defined
 
+    - import_tasks: tasks/prepare.yml
+
     - import_tasks: tasks/cleanup-disk.yml
       when: skip_cleanup_disk is not defined
 

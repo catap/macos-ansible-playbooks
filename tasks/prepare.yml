@@ -1,0 +1,10 @@
+#
+# Adjust ansible dynamically when it required.
+#
+# Like setup the right python :)
+#
+---
+- name: Set ansible_python_interpreter to use python27-bootstrap
+  set_fact:
+    ansible_python_interpreter: "/opt/bootstrap/libexec/python27-bootstrap/bin/python2.7"
+  when: ('bootstrap_python' in group_names)

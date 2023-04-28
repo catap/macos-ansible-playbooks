@@ -76,8 +76,8 @@
 
 - name: Install bootstrap's python
   become: yes
-  raw: '{{ bootstrap_prefix }}/bin/port -N install {{ bootstrap_python }}'
-  when: bootstrap_python is defined
+  raw: '{{ bootstrap_prefix }}/bin/port -N install python27-bootstrap'
+  when: ('bootstrap_python' in group_names)
 
 - name: Cleanup not requried ports
   become: yes
