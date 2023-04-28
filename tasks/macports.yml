@@ -12,7 +12,7 @@
     otool -L {{ macports_prefix }}/libexec/macports/lib/pextlib1.0/Pextlib.dylib | grep /usr/lib/libcurl
   ignore_errors: yes
   register: macports_is_updated
-  when: bootstrap_curl is not defined
+  when: ('bootstrap_curl' not in group_names)
 
 - name: Checking installed version of MacPorts against bootstrap curl
   shell: |
@@ -21,7 +21,7 @@
     otool -L {{ macports_prefix }}/libexec/macports/lib/pextlib1.0/Pextlib.dylib | grep {{ bootstrap_prefix }}/lib/libcurl
   ignore_errors: yes
   register: macports_is_updated_with_curl
-  when: bootstrap_curl is defined
+  when: ('bootstrap_curl' in group_names)
 
 - name: Create temporary directory
   tempfile:
@@ -50,14 +50,14 @@
     path: '{{ bootstrap_prefix }}/etc/macports/macports.conf'
     line: 'cxx_stdlib              libstdc++'
     insertbefore: BOF
-  when: (macports_is_updated_with_curl is not succeeded) and (ansible_facts.osversion | regex_search('^\d+') | int < 11) and (bootstrap_curl is defined)
+  when: (macports_is_updated_with_curl is not succeeded) and (ansible_facts.osversion | regex_search('^\d+') | int < 11) and ('bootstrap_curl' in group_names)
 
 - name: Add PPC roseta config block into bootstrap MacPorts
   become: yes
   blockinfile:
     path: '{{ bootstrap_prefix }}/etc/macports/macports.conf'
     block: '{{ macports_conf_custom_ppc }}'
-  when: (macports_is_updated_with_curl is not succeeded) and ('rosetta_ppc' in group_names) and (bootstrap_curl is defined)
+  when: (macports_is_updated_with_curl is not succeeded) and ('rosetta_ppc' in group_names) and ('bootstrap_curl' in group_names)
 
 - name: Sync bootstrap MacPorts
   become: yes

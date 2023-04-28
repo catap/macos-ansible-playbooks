@@ -12,14 +12,14 @@
       when: prl_id is defined
 
     - import_tasks: tasks/macports-bootstrap.yml
-      when: (bootstrap_python is defined) or (bootstrap_curl is defined)
+      when: (bootstrap_python is defined) or ('bootstrap_curl' in group_names)
 
     - name: Remove bootstrap MacPorts
       become: yes
       file:
         state: absent
         path: '{{ bootstrap_prefix }}'
-      when: (bootstrap_python is not defined) and (bootstrap_curl is not defined)
+      when: (bootstrap_python is not defined) and ('bootstrap_curl' not in group_names)
 
     - name: Gather facts
       gather_facts:
