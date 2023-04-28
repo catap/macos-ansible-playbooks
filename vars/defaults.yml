@@ -25,3 +25,8 @@ macports_conf_custom_ppc: |
   build_arch              ppc
   cxx_stdlib              libstdc++
   buildfromsource         always
+
+
+# Used MacPorts sources for Paralles VMs.
+macports_source_prls: |
+  file:///Volumes/SharedFolders/Home/src/macports-ports [default,nosync]
