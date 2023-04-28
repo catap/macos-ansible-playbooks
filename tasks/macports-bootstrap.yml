@@ -31,7 +31,14 @@
     cd {{ tmp_prefix }}/MacPorts-{{ version }}
     export PATH=/bin:/sbin:/usr/bin:/usr/sbin
     ./configure --prefix={{ bootstrap_prefix }} --with-applications-dir={{ bootstrap_prefix }}/Applications
-  when: bootstrap_is_updated is not succeeded
+  when: (bootstrap_is_updated is not succeeded) and ('rosetta_ppc' not in group_names)
+
+- name: Configure bootstrap MacPorts with PPC roseta
+  raw: |
+    cd {{ tmp_prefix }}/MacPorts-{{ version }}
+    export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+    ./configure --prefix={{ bootstrap_prefix }} --with-applications-dir={{ bootstrap_prefix }}/Applications {{ macports_configure_args_ppc }}
+  when: (bootstrap_is_updated is not succeeded) and ('rosetta_ppc' in group_names)
 
 - name: Make bootstrap MacPorts
   raw: |

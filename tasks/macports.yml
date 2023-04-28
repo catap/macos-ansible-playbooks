@@ -52,6 +52,13 @@
     insertbefore: BOF
   when: (macports_is_updated_with_curl is not succeeded) and (ansible_facts.osversion | regex_search('^\d+') | int < 11) and (bootstrap_curl is defined)
 
+- name: Add PPC roseta config block into bootstrap MacPorts
+  become: yes
+  blockinfile:
+    path: '{{ bootstrap_prefix }}/etc/macports/macports.conf'
+    block: '{{ macports_conf_custom_ppc }}'
+  when: (macports_is_updated_with_curl is not succeeded) and ('rosetta_ppc' in group_names) and (bootstrap_curl is defined)
+
 - name: Sync bootstrap MacPorts
   become: yes
   shell:
@@ -82,7 +89,15 @@
     chdir: '{{ tmp_dir.path }}/MacPorts-{{ version }}'
   environment:
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
-  when: macports_is_updated_with_curl is not succeeded
+  when: (macports_is_updated_with_curl is not succeeded) and ('rosetta_ppc' not in group_names)
+
+- name: Configure MacPorts against bootstrap curl for Rosetta PPC
+  shell:
+    cmd: './configure --prefix={{ macports_prefix }} --with-curlprefix={{ bootstrap_prefix }} {{ macports_configure_args_ppc }}'
+    chdir: '{{ tmp_dir.path }}/MacPorts-{{ version }}'
+  environment:
+    PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
+  when: (macports_is_updated_with_curl is not succeeded) and ('rosetta_ppc' in group_names)
 
 - name: Configure MacPorts
   shell:
@@ -108,6 +123,13 @@
   environment:
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
   when: (macports_is_updated is not succeeded) or (macports_is_updated_with_curl is not succeeded)
+
+- name: Add custom config into MacPorts
+  become: yes
+  blockinfile:
+    path: '{{ bootstrap_prefix }}/etc/macports/macports.conf'
+    block: '{{ macports_conf_custom_ppc }}'
+  when: (macports_is_updated is not succeeded) or (macports_is_updated_with_curl is not succeeded) and ('rosetta_ppc' in group_names)
 
 - name: Disable reclaim reminders
   become: yes

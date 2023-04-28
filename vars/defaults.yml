@@ -15,3 +15,13 @@ bootstrap_curl_variants: -http2
 
 # The path to temporary files
 tmp_prefix: /tmp
+
+# An extra args which is uesd to configure MacPorts for PPC Roseta
+macports_configure_args_ppc: --build=powerpc-apple-darwin CC='/usr/bin/gcc -m32 -arch ppc'
+
+# The block which is inserted into PPC Roseta
+macports_conf_custom_ppc: |
+  universal_archs
+  build_arch              ppc
+  cxx_stdlib              libstdc++
+  buildfromsource         always
