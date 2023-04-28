@@ -127,9 +127,9 @@
 - name: Add custom config into MacPorts
   become: yes
   blockinfile:
-    path: '{{ bootstrap_prefix }}/etc/macports/macports.conf'
+    path: '{{ macports_prefix }}/etc/macports/macports.conf'
     block: '{{ macports_conf_custom_ppc }}'
-  when: (macports_is_updated is not succeeded) or (macports_is_updated_with_curl is not succeeded) and ('rosetta_ppc' in group_names)
+  when: ((macports_is_updated is not succeeded) or (macports_is_updated_with_curl is not succeeded)) and ('rosetta_ppc' in group_names)
 
 - name: Disable reclaim reminders
   become: yes
