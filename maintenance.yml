@@ -11,10 +11,10 @@
     - import_tasks: tasks/parallels-start.yml
       when: prl_id is defined
 
-    - import_tasks: tasks/prepare.yml
-
     - import_tasks: tasks/macports-bootstrap.yml
       when: ('bootstrap_python' in group_names) or ('bootstrap_curl' in group_names)
+
+    - import_tasks: tasks/prepare.yml
 
     - name: Remove bootstrap MacPorts
       become: yes
