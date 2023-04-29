@@ -83,6 +83,14 @@
     PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
   when: macports_is_updated_with_curl is not succeeded
 
+- name: Upgrade bootstrap ports
+  become: yes
+  shell:
+    cmd: '{{ bootstrap_prefix }}/bin/port -N upgrade outdated'
+  environment:
+    PATH: '/bin:/sbin:/usr/bin:/usr/sbin'
+  when: ('bootstrap_python' in group_names) or ('bootstrap_curl' in group_names)
+
 - name: Configure MacPorts against bootstrap curl
   shell:
     cmd: './configure --prefix={{ macports_prefix }} --with-curlprefix={{ bootstrap_prefix }}'

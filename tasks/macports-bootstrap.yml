@@ -70,10 +70,6 @@
   become: yes
   raw: '{{ bootstrap_prefix }}/bin/port sync'
 
-- name: Upgrade bootstrap's ports
-  become: yes
-  raw: '{{ bootstrap_prefix }}/bin/port upgrade outdated'
-
 - name: Install bootstrap's python
   become: yes
   raw: '{{ bootstrap_prefix }}/bin/port -N install python27-bootstrap'
