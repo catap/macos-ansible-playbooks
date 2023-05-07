@@ -50,14 +50,14 @@
     path: '{{ bootstrap_prefix }}/etc/macports/macports.conf'
     line: 'cxx_stdlib              libstdc++'
     insertbefore: BOF
-  when: (macports_is_updated_with_curl is not succeeded) and (ansible_facts.osversion | regex_search('^\d+') | int < 11) and ('bootstrap_curl' in group_names)
+  when: (ansible_facts.osversion | regex_search('^\d+') | int < 11) and ('bootstrap_curl' in group_names)
 
-- name: Add PPC roseta config block into bootstrap MacPorts
+- name: Add PPC rosetta config block into bootstrap MacPorts
   become: yes
   blockinfile:
     path: '{{ bootstrap_prefix }}/etc/macports/macports.conf'
     block: '{{ macports_conf_custom_ppc }}'
-  when: (macports_is_updated_with_curl is not succeeded) and ('rosetta_ppc' in group_names) and ('bootstrap_curl' in group_names)
+  when: ('rosetta_ppc' in group_names) and ('bootstrap_curl' in group_names)
 
 - name: Sync bootstrap MacPorts
   become: yes
@@ -137,7 +137,7 @@
   blockinfile:
     path: '{{ macports_prefix }}/etc/macports/macports.conf'
     block: '{{ macports_conf_custom_ppc }}'
-  when: ((macports_is_updated is not succeeded) or (macports_is_updated_with_curl is not succeeded)) and ('rosetta_ppc' in group_names)
+  when: ('rosetta_ppc' in group_names)
 
 - name: Disable reclaim reminders
   become: yes
