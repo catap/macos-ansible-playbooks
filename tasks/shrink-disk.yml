@@ -17,27 +17,20 @@
   shell: 'diskutil apfs defragment /System/Volumes/Data enable'
   ignore_errors: yes
 
-- name: Shrink disk via secureErase freespace on /
+- name: Shrink disks
   become: yes
-  shell: 'diskutil secureErase freespace 0 /'
+  shell: |
+    if [ -d {{ item }} ]; then
+      dd if=/dev/zero of={{ item }}/zero.file bs=1048576 || true
+      cat /dev/zero > {{ item }}/zero.small.file || true
+      sync
+      sleep 1
+      sync
+      rm -f {{ item }}/zero.small.file
+      rm -f {{ item }}/zero.file
+    fi
   ignore_errors: yes
-  register: diskutil_root
-
-- name: Shrink disk via secureErase freespace on /Volumes/Macintosh HD
-  become: yes
-  shell: 'diskutil secureErase freespace 0 /Volumes/Macintosh\ HD'
-  ignore_errors: yes
-  register: diskutil_Macintosh_HD
-  when: diskutil_root is not succeeded
-
-- name: Shrink disk via secureErase freespace on /System/Volumes/Data
-  become: yes
-  shell: 'diskutil secureErase freespace 0 /System/Volumes/Data'
-  ignore_errors: yes
-  register: diskutil_Data
-  when: (diskutil_root is not succeeded) and (diskutil_Macintosh_HD is not succeeded)
-
-- name: Shrink disk via huge file
-  become: yes
-  shell: 'cat /dev/zero > hugefile; sync; sleep 1; sync; rm -f hugefile'
-  when: (diskutil_root is not succeeded) and (diskutil_Macintosh_HD is not succeeded) and (diskutil_Data is not succeeded)
+  with_items:
+    - '/'
+    - '/Volumes/Macintosh\ HD'
+    - '/System/Volumes/Data'
