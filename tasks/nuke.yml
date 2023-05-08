@@ -1,0 +1,15 @@
+#
+# Remove all MacPorts
+#
+---
+- name: Remove bootstrap MacPorts
+  become: yes
+  file:
+    state: absent
+    path: '{{ bootstrap_prefix }}'
+
+- name: Remove MacPorts
+  become: yes
+  file:
+    state: absent
+    path: '{{ macports_prefix }}'
