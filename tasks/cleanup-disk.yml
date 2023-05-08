@@ -38,7 +38,7 @@
 
 - name: Remove sleepimage
   become: yes
-  shell: 'rm -f /private/var/vm/sleepimage'
+  shell: 'rm -rf /private/var/vm/sleepimage*'
   ignore_errors: yes
 
 - name: Disable swap
@@ -48,7 +48,7 @@
 
 - name: Remove swap files
   become: yes
-  shell: 'rm -f /private/var/vm/swapfile*'
+  shell: 'rm -rf /private/var/vm/swapfile*'
   ignore_errors: yes
 
 - name: Remove core files
