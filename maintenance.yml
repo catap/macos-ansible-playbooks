@@ -34,7 +34,7 @@
       when: (prl_id is defined) and ('skip_parallels_tools' not in group_names)
 
     - import_tasks: tasks/install-updates.yml
-      when: skip_updates is not defined
+      when: ('install_updates' in group_names)
 
     - import_tasks: tasks/macports.yml
 
