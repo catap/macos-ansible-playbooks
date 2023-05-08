@@ -21,9 +21,8 @@ To use it add your ssh key into `keys` folder with used username and create
 
 [macos]
 leopard             prl_id=b7151a56-371b-4b63-87db-6533e00da1da ansible_ssh_host=macos-10.5-leopard.shared
-leopard-ppc         prl_id=f8622c6c-024f-41f0-bcb1-40b09b90c792 ansible_ssh_host=macos-10.5-ppc-leopard.shared
 snow-leopard        prl_id=e7448af8-cbfa-4560-be77-dd0770ac09dd ansible_ssh_host=macos-10.6-snow-leopard.shared
-snow-leopard-ppc    prl_id=619a82d5-764d-4beb-8fe6-05333f959348 ansible_ssh_host=macos-10.6-ppc-snow-leopard.shared
+snow-leopard-ppc    prl_id=e6539544-6023-47bb-a9a3-d11854e50502 ansible_ssh_host=macos-10.6-ppc-snow-leopard.shared
 lion                prl_id=f0b1c3ca-94a8-477a-87de-9eec40c377b9 ansible_ssh_host=macos-10.7-lion.shared
 mountain-lion       prl_id=f4dec53b-b5ac-4bbd-bc08-c1ac32a42149 ansible_ssh_host=macos-10.8-mountain-lion.shared
 mavericks           prl_id=276f0cd8-6111-412a-8eb0-60d0c95ff3fd ansible_ssh_host=macos-10.9-mavericks.shared
@@ -38,7 +37,6 @@ monterey            prl_id=b03b0f30-0158-4fe6-ab6a-2197d1d6a24b ansible_ssh_host
 
 [bootstrap_curl]
 leopard
-leopard-ppc
 snow-leopard
 snow-leopard-ppc
 lion
@@ -47,18 +45,15 @@ mavericks
 
 [bootstrap_python]
 leopard
-leopard-ppc
 snow-leopard
 snow-leopard-ppc
 
 [rosetta_ppc]
-leopard-ppc
 snow-leopard-ppc
 
 [skip_parallels_tools]
 # Parallels Tools v15 works on leopard, so, no Update
 leopard
-leopard-ppc
 ```
 where `prl_id` is optional variable which contains a unique ID of Parallels' VM,
 and it uses `ansible_ssh_host` to suggest an address which should be used by ansible.
@@ -74,8 +69,8 @@ I also enable a custom python for 10.5 and using curl up to 10.10, and switched
 all MacPorts to `file:///Volumes/SharedFolders/Home/src/macports-ports`.
 
 Thus, it starts VM one-by-one, but if you have enough resources to run more VMs,
-feel free to increase ansible serial. For example `ansible-playbook -e serial=2
-maintenance.yml` runs two VM in parallel.
+feel free to increase ansible serial via `servar` variale. For example
+`ansible-playbook -e servar=2 maintenance.yml` runs two VM in parallel.
 
-It also has additional playbook `shrink.yml` which fills the disk by zeros, and
-`cleanup.yml` that only cleanup a disk.
+It also has additional playbook `shrink.yml` which fills the disk by zeros,
+`cleanup.yml` that only cleanup a disk, and `nuke.yml` which removes installed MacPorts.
