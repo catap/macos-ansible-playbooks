@@ -119,7 +119,6 @@
     {{ bootstrap_prefix }}/bin/port -N reclaim
     rm -rf {{ bootstrap_prefix }}/var/macports/distfiles/*
     rm -rf {{ bootstrap_prefix }}/var/macports/build/*
-    rm -rf {{ bootstrap_prefix }}/var/macports/sources/*
     rm -rf {{ bootstrap_prefix }}/var/macports/logs/*
     rm -rf {{ bootstrap_prefix }}/var/log/*
     rm -rf {{ bootstrap_prefix }}/var/cache/*
@@ -130,7 +129,6 @@
     {{ macports_prefix }}/bin/port -N reclaim
     rm -rf {{ macports_prefix }}/var/macports/distfiles/*
     rm -rf {{ macports_prefix }}/var/macports/build/*
-    rm -rf {{ macports_prefix }}/var/macports/sources/*
     rm -rf {{ macports_prefix }}/var/macports/logs/*
     rm -rf {{ macports_prefix }}/var/log/*
     rm -rf {{ macports_prefix }}/var/cache/*
